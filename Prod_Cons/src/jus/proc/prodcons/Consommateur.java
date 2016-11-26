@@ -7,10 +7,10 @@ import jus.poc.prodcons._Consommateur;
 
 public class Consommateur extends Acteur implements _Consommateur{
 
+	
 	protected Consommateur(int type, Observateur observateur, int moyenneTempsDeTraitement,
 			int deviationTempsDeTraitement) throws ControlException {
 		super(type, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -21,14 +21,13 @@ public class Consommateur extends Acteur implements _Consommateur{
 
 	@Override
 	public int identification() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public int moyenneTempsDeTraitement() {
 		// TODO Auto-generated method stub
-		return 0;
+		return moyenneTempsDeTraitement;
 	}
 
 	@Override

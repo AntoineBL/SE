@@ -15,5 +15,7 @@ public class TestProdCons extends Simulateur{
 		// TODO Auto-generated method stub
 		
 	}
+	
+	 public static void main(String[] args){new TestProdCons(new Observateur()).start();} 
 
 }
