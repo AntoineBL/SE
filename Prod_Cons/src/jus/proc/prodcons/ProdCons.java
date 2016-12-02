@@ -7,10 +7,16 @@ import jus.poc.prodcons._Producteur;
 
 public class ProdCons implements Tampon{
 
+	private int nbConsommateur;
+	private int nbProducteur;
+
+	public ProdCons(){
+		nbConsommateur =0;
+	}
+	
 	@Override
 	public int enAttente() {
-		// TODO Auto-generated method stub
-		return 0;
+		return nbConsommateur;
 	}
 
 	@Override
@@ -21,7 +27,6 @@ public class ProdCons implements Tampon{
 
 	@Override
 	public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -30,5 +35,41 @@ public class ProdCons implements Tampon{
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
+	
+	public synchronized void beginComsommateur(){
+		while(nbConsommateur>0 || nbProducteur>0){
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		nbConsommateur++;
+		
+	}
+	
+	public synchronized void endComsommateur(){
+		nbConsommateur--;
+		notifyAll();
+	}
+	
+	public synchronized void beginProducteur(){
+		while(nbConsommateur>0 || nbProducteur>0){
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		nbProducteur++;
+		
+	}
+	
+	public synchronized void endProducteur(){
+		nbProducteur--;
+		notifyAll();
+		
+	}
 }
