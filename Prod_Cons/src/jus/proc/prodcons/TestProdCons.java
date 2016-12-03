@@ -19,31 +19,24 @@ public class TestProdCons extends Simulateur{
 
 	@Override
 	protected void run() throws Exception {
-		// TODO Auto-generated method stub
 		
+		ProdCons buffer = new ProdCons(5);
+		
+		Producteur p1 = new Producteur(buffer, observateur, 1000, 999, 5, 1);
+		Producteur p2 = new Producteur(buffer, observateur, 1000, 999, 5, 1);
+		Producteur p3 = new Producteur(buffer, observateur, 1000, 999, 5, 1);
+		Consommateur c1 = new Consommateur(buffer, observateur, 3000, 500);
+		Consommateur c2 = new Consommateur(buffer, observateur, 3000, 500);
+		Consommateur c3 = new Consommateur(buffer, observateur, 3000, 500);
+		p1.start(); p2.start(); p3.start(); c1.start(); c2.start(); c3.start();
+		
+
 	}
 	
 	 public static void main(String[] args){new TestProdCons(new Observateur()).start();
 
-		int moyenneTempsDeTraitement = 50;
-		int deviationTempsDeTraitement = 10;
+
 	 	
-	 	for(int i=0; i<nbActeur; i++){
-			try {
-				tab_Consommateur[i] = new Consommateur(i, new Observateur(), moyenneTempsDeTraitement, deviationTempsDeTraitement);
-			} catch (ControlException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	 	
-	 	for(int i=0; i<nbActeur; i++){
-			try {
-				tab_Producteur[i] = new Producteur(i, new Observateur(), moyenneTempsDeTraitement, deviationTempsDeTraitement);
-			} catch (ControlException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	 }
 }

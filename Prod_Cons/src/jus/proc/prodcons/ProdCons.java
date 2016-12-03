@@ -7,69 +7,69 @@ import jus.poc.prodcons._Producteur;
 
 public class ProdCons implements Tampon{
 
-	private int nbConsommateur;
-	private int nbProducteur;
+	// Indice actuel du pointeur buffer pour les producteurs
+	private int iProd = 0;
+	// Indice actuel du pointeur buffer pour les consommateurs
+	private int iCons = 0;
+	
+	// Le buffer circulaire 
+	private Message[] buffer;
+	private int tailleBuffer;
+	
+	// Nombre de message dans le buffer
+	private int nbMessageBuffer = 0;
 
-	public ProdCons(){
-		nbConsommateur =0;
+	public ProdCons(int taille){
+		this.tailleBuffer = taille;
+		this.buffer = new Message[tailleBuffer];
 	}
 	
+	
 	@Override
-	public int enAttente() {
-		return nbConsommateur;
+	public synchronized int enAttente() {
+		return nbMessageBuffer;	
 	}
 
+	
 	@Override
-	public Message get(_Consommateur arg0) throws Exception, InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
+	public synchronized Message get(_Consommateur consommateur) throws Exception, InterruptedException {
 		
+		while(nbMessageBuffer <= 0) {
+			wait();
+		}
+		MessageX msg = (MessageX) buffer[iCons];
+		iCons = (iCons +1) % tailleBuffer;
+		nbMessageBuffer--;
+		
+		System.out.println("\n\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
+		
+		notifyAll();
+		return msg;
+	}
+
+
+	@Override
+	public synchronized void put(_Producteur producteur, Message msg) throws Exception, InterruptedException {
+		
+		while(nbMessageBuffer >= tailleBuffer) {
+			wait();
+		}
+		buffer[iProd] = msg;
+		iProd = (iProd +1) % tailleBuffer;
+		nbMessageBuffer++;
+		
+		System.out.println("\n\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
+		
+		notifyAll();
 	}
 
 	@Override
 	public int taille() {
-		// TODO Auto-generated method stub
-		return 0;
+		return tailleBuffer;
 	}
 	
-	public synchronized void beginComsommateur(){
-		while(nbConsommateur>0 || nbProducteur>0){
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		nbConsommateur++;
-		
+	public int getnbMessageBuffer() {
+		return nbMessageBuffer;
 	}
 	
-	public synchronized void endComsommateur(){
-		nbConsommateur--;
-		notifyAll();
-	}
-	
-	public synchronized void beginProducteur(){
-		while(nbConsommateur>0 || nbProducteur>0){
-			try {
-				wait();
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		nbProducteur++;
-		
-	}
-	
-	public synchronized void endProducteur(){
-		nbProducteur--;
-		notifyAll();
-		
-	}
 }

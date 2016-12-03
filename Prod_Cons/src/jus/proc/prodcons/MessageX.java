@@ -6,7 +6,7 @@ import jus.poc.prodcons._Producteur;
 public class MessageX implements Message{
 
 	// Producteur du message
-	private Producteur mProducteur;
+	private Producteur mProducteur;	
 	
 	// ID du message
 	private int IDmessage;
@@ -20,6 +20,11 @@ public class MessageX implements Message{
 	
 	public String toString() {
 		
-		return "Message NO: " + IDmessage + "  // Producteur du message: " + mProducteur.identification();
+		return "<<<Message NO: [" +IDmessage+"-"+mProducteur.identification()+"] | Producteur: " + mProducteur.identification()+">>>";
+	}
+	
+	public String toStringSimple() {
+		
+		return "<<<"+IDmessage+"-"+mProducteur.identification()+">>>";
 	}
 }

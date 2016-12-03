@@ -1,44 +1,63 @@
 package jus.proc.prodcons;
 
 import jus.poc.prodcons.Acteur;
+import jus.poc.prodcons.Aleatoire;
 import jus.poc.prodcons.ControlException;
+import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons._Consommateur;
 
 public class Consommateur extends Acteur implements _Consommateur{
 	
+	//Buffer utilisé par le consommateur
+	private ProdCons buffer;
 	
-	protected Consommateur(int type, Observateur observateur, int moyenneTempsDeTraitement,
+	//Nombre de message lus par le consommateur
+	private int nbMessage = 0;
+	
+	
+	protected Consommateur(ProdCons buffer, Observateur observateur, int moyenneTempsDeTraitement,
 			int deviationTempsDeTraitement) throws ControlException {
-		super(type, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
-	}
-
-	@Override
-	public int deviationTempsDeTraitement() {
-		// TODO Auto-generated method stub
-		return deviationTempsDeTraitement;
-	}
-
-	@Override
-	public int identification() {
-		return 0;
-	}
-
-	@Override
-	public int moyenneTempsDeTraitement() {
-		// TODO Auto-generated method stub
-		return moyenneTempsDeTraitement;
+		
+		super(Acteur.typeConsommateur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
+		this.buffer = buffer;
+		
 	}
 
 	@Override
 	public int nombreDeMessages() {
 		// TODO Auto-generated method stub
-		return 0;
+		return this.nbMessage;
 	}
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		
+		Message msg;
+		int tpsAlea;
+		while(true) {
+			
+			
+			// Recupere un message sur le buffer
+			try {
+				msg = this.buffer.get(this);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			//ACO: remplacer les variable int par les fonctions
+			tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+			
+			//Attente pour simuler le traitement, c'est à dire la consommation du message	
+			try {
+				Thread.sleep(tpsAlea);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			this.nbMessage = this.nbMessage +1;
+		}
 		
 	}
 	
