@@ -1,4 +1,4 @@
-package jus.proc.prodcons;
+package jus.poc.prodcons.v1;
 
 import jus.poc.prodcons.ControlException;
 import jus.poc.prodcons.Observateur;
@@ -25,9 +25,9 @@ public class TestProdCons extends Simulateur{
 		Producteur p1 = new Producteur(buffer, observateur, 1000, 999, 5, 1);
 		Producteur p2 = new Producteur(buffer, observateur, 1000, 999, 5, 1);
 		Producteur p3 = new Producteur(buffer, observateur, 1000, 999, 5, 1);
-		Consommateur c1 = new Consommateur(buffer, observateur, 3000, 500);
-		Consommateur c2 = new Consommateur(buffer, observateur, 3000, 500);
-		Consommateur c3 = new Consommateur(buffer, observateur, 3000, 500);
+		Consommateur c1 = new Consommateur(buffer, observateur, 2000, 500);
+		Consommateur c2 = new Consommateur(buffer, observateur, 2000, 500);
+		Consommateur c3 = new Consommateur(buffer, observateur, 2000, 500);
 		p1.start(); p2.start(); p3.start(); c1.start(); c2.start(); c3.start();
 		
 
@@ -40,3 +40,12 @@ public class TestProdCons extends Simulateur{
 	 	
 	 }
 }
+
+//public static void init(String file) {
+//	Properties properties = new Properties();
+//	
+//	properties.loadFromXML(new FileInputStream(file));
+//	nb_cons = Integer.parseInt(properties.getProperty("CHAMP DANS LE XML"));
+//	...
+//	...
+//}

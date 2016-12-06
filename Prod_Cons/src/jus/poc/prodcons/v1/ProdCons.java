@@ -1,4 +1,4 @@
-package jus.proc.prodcons;
+package jus.poc.prodcons.v1;
 
 import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Tampon;
@@ -41,7 +41,7 @@ public class ProdCons implements Tampon{
 		iCons = (iCons +1) % tailleBuffer;
 		nbMessageBuffer--;
 		
-		System.out.println("\n\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
+		System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
 		
 		notifyAll();
 		return msg;
@@ -58,7 +58,7 @@ public class ProdCons implements Tampon{
 		iProd = (iProd +1) % tailleBuffer;
 		nbMessageBuffer++;
 		
-		System.out.println("\n\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
+		System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
 		
 		notifyAll();
 	}
