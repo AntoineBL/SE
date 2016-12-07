@@ -14,8 +14,9 @@ import jus.poc.prodcons.Tampon;
 public class TestProdCons extends Simulateur{
 
 	
- 	 static int nbProd;
- 	 static int nbCons;
+	//Declaration des variables (XML)
+ 	private static int nbProd;
+ 	private static int nbCons;
  	private static int tailleBuffer;
  	private static int tempsMoyenProd;
  	private static int deviationTempsProd;
@@ -23,7 +24,6 @@ public class TestProdCons extends Simulateur{
  	private static int deviationTempsCons;
  	private static int nbMoyenProd;
  	private static int deviationNbProd;
- 	private static int condTerminaison;
  	
  	
  	
@@ -35,7 +35,6 @@ public class TestProdCons extends Simulateur{
 	protected void run() throws Exception {
 		
 		init("src/jus/poc/prodcons/options/options.xml");
-		condTerminaison = nbProd;
 		ProdCons buffer = new ProdCons(tailleBuffer);
 		
 		Consommateur[] tabCons = new Consommateur[nbCons];
@@ -55,19 +54,21 @@ public class TestProdCons extends Simulateur{
 			tabCons[i].start();
 		}
 		
+		//Bloquer le code tant que tous les threads producteurs non pas fini
 		for(int i=0; i < nbProd; i++) {
 			tabProd[i].join();
 		}
+		//Bloquer le code tant que le buffer n'est pas vide
 		while(buffer.enAttente() > 0) {
-			System.out.println("NOMBRE DE MESSAGE RESTANT DANS LE BUFFER: "+buffer.enAttente());
+			//On attend
 		}
-		Thread.sleep(3000);
-		System.out.println("NOMBRE DE MESSAGE RESTANT DANS LE BUFFER: "+buffer.enAttente());
-		for(int i=0; i < nbCons; i++) {
-			tabCons[i].interrupt();
-			System.out.println("terminaison de " + i);
-		}
+		//On  arrete les threads consommateurs
+		Consommateur.terminee = true;
+
 		
+		System.out.println("\n\n------------------");
+		System.out.println("FIN DU PROGRAMME");
+		System.out.println("------------------");
 	}
 	
 	public static void main(String[] args){
@@ -90,9 +91,6 @@ public class TestProdCons extends Simulateur{
 
 	}
 	
-	public static void terminaison() {
-		condTerminaison--;
-	}
 	
 
 }

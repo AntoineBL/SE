@@ -1,10 +1,10 @@
-package jus.proc.prodcons.v2;
+package jus.poc.prodcons.v2;
 
 import jus.poc.prodcons.Message;
 import jus.poc.prodcons.Tampon;
 import jus.poc.prodcons._Consommateur;
 import jus.poc.prodcons._Producteur;
-import jus.proc.prodcons.v2.Semaphore;
+import jus.poc.prodcons.v2.Semaphore;
 
 public class ProdCons implements Tampon{
 

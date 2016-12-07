@@ -15,6 +15,9 @@ public class Consommateur extends Acteur implements _Consommateur{
 	//Nombre de message lus par le consommateur
 	private int nbMessage = 0;
 	
+	//Condition de terminaison des threads consommateurs
+	public static boolean terminee = false;
+	
 	//Constructeur de Consommateur:
 		//buffer
 		//observateur
@@ -30,7 +33,6 @@ public class Consommateur extends Acteur implements _Consommateur{
 
 	@Override
 	public int nombreDeMessages() {
-		// TODO Auto-generated method stub
 		return this.nbMessage;
 	}
 
@@ -39,9 +41,9 @@ public class Consommateur extends Acteur implements _Consommateur{
 		
 		Message msg;
 		int tpsAlea;
-		while(true) {
+		while(!terminee) {
 			
-			// Recupere un message sur le buffer
+			//Recupere un message sur le buffer
 			try {
 				msg = this.buffer.get(this);
 			} catch (Exception e1) {
@@ -58,7 +60,7 @@ public class Consommateur extends Acteur implements _Consommateur{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+			//Fonction pas utilisé mais qui peut etre utile (savoir combien de message a lu un consommateur)
 			this.nbMessage = this.nbMessage +1;
 		}
 		
