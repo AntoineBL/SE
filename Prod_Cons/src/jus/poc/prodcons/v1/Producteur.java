@@ -14,12 +14,19 @@ public class Producteur extends Acteur implements _Producteur{
 	//Nombre de message du producteur
 	private int nbMessage = 0;
 	
-	protected Producteur(ProdCons buffer, Observateur observateur, int moyenneTempsDeTraitement,
-			int deviationTempsDeTraitement, int moyenneNbMessage, int deviationNbMessage) throws ControlException {
+	//Constructeur de Producteur:
+	//buffer
+	//observateur
+	//tempsMoyenProd -> moyenneTempsDeTraitement()
+	//deviationTempsProd -> deviationTempsDeTraitement()
+	//nbMoyenProd
+	//deviationTempsProd
+	protected Producteur(ProdCons buffer, Observateur observateur, int tempsMoyenProd,
+			int deviationTempsProd, int nbMoyenProd, int deviationNbProd) throws ControlException {
 		
-		super(Acteur.typeProducteur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
+		super(Acteur.typeProducteur, observateur, tempsMoyenProd, deviationTempsProd);
 		this.buffer = buffer;
-		this.nbMessage = Aleatoire.valeur(moyenneNbMessage, deviationNbMessage);
+		this.nbMessage = Aleatoire.valeur(nbMoyenProd, deviationNbProd);
 		
 	}
 
@@ -30,14 +37,14 @@ public class Producteur extends Acteur implements _Producteur{
 	}
 	
 	public void run() {
-		
+
 		MessageX message;
 		int IDmessage = 1;
 		int tpsAlea;
 		while (nombreDeMessages() > 0) {
 			
 			//ACO: remplacer les variable int par les fonctions
-			tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+			tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
 			message = new MessageX(this,IDmessage);
 			
 			//Attente pour simuler le traitement, c'est à dire la production du message
@@ -46,7 +53,7 @@ public class Producteur extends Acteur implements _Producteur{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+
 			// Dépose un message sur le buffer
 			try {  // ACO: essayer plusieurs catchs
 				this.buffer.put(this,message);
@@ -58,7 +65,7 @@ public class Producteur extends Acteur implements _Producteur{
 			IDmessage++;
 			
 		}
-
+		
 	}
 	
 

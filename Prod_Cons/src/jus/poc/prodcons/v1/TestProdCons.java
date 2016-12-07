@@ -1,5 +1,11 @@
 package jus.poc.prodcons.v1;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.InvalidPropertiesFormatException;
+import java.util.Properties;
+
 import jus.poc.prodcons.ControlException;
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons.Simulateur;
@@ -8,11 +14,19 @@ import jus.poc.prodcons.Tampon;
 public class TestProdCons extends Simulateur{
 
 	
-	
- 	private static int nbActeur = 10;
- 	private static Consommateur tab_Consommateur[];
- 	private static Producteur tab_Producteur[];
-	
+ 	 static int nbProd;
+ 	 static int nbCons;
+ 	private static int tailleBuffer;
+ 	private static int tempsMoyenProd;
+ 	private static int deviationTempsProd;
+ 	private static int tempsMoyenCons;
+ 	private static int deviationTempsCons;
+ 	private static int nbMoyenProd;
+ 	private static int deviationNbProd;
+ 	private static int condTerminaison;
+ 	
+ 	
+ 	
 	public TestProdCons(Observateur observateur) {
 		super(observateur);	
 	}
@@ -20,32 +34,66 @@ public class TestProdCons extends Simulateur{
 	@Override
 	protected void run() throws Exception {
 		
-		ProdCons buffer = new ProdCons(5);
+		init("src/jus/poc/prodcons/options/options.xml");
+		condTerminaison = nbProd;
+		ProdCons buffer = new ProdCons(tailleBuffer);
 		
-		Producteur p1 = new Producteur(buffer, observateur, 1000, 999, 5, 1);
-		Producteur p2 = new Producteur(buffer, observateur, 1000, 999, 5, 1);
-		Producteur p3 = new Producteur(buffer, observateur, 1000, 999, 5, 1);
-		Consommateur c1 = new Consommateur(buffer, observateur, 2000, 500);
-		Consommateur c2 = new Consommateur(buffer, observateur, 2000, 500);
-		Consommateur c3 = new Consommateur(buffer, observateur, 2000, 500);
-		p1.start(); p2.start(); p3.start(); c1.start(); c2.start(); c3.start();
+		Consommateur[] tabCons = new Consommateur[nbCons];
+	 	Producteur[] tabProd = new Producteur[nbProd];
 		
+		//CREATION DES PRODUCTEURS et CONSOMMATEURS + lancement des threads
+		for(int i=0; i < nbProd; i++) {
+			tabProd[i] = new Producteur(buffer, observateur, tempsMoyenProd, deviationTempsProd, nbMoyenProd, deviationNbProd);
+		}
+		for(int i=0; i < nbCons; i++) {
+			tabCons[i] = new Consommateur(buffer, observateur, tempsMoyenCons, deviationTempsCons);
+		}
+		for(int i=0; i < nbProd; i++) {
+			tabProd[i].start();
+		}
+		for(int i=0; i < nbCons; i++) {
+			tabCons[i].start();
+		}
+		
+		for(int i=0; i < nbProd; i++) {
+			tabProd[i].join();
+		}
+		while(buffer.enAttente() > 0) {
+			System.out.println("NOMBRE DE MESSAGE RESTANT DANS LE BUFFER: "+buffer.enAttente());
+		}
+		Thread.sleep(3000);
+		System.out.println("NOMBRE DE MESSAGE RESTANT DANS LE BUFFER: "+buffer.enAttente());
+		for(int i=0; i < nbCons; i++) {
+			tabCons[i].interrupt();
+			System.out.println("terminaison de " + i);
+		}
+		
+	}
+	
+	public static void main(String[] args){
+		 new TestProdCons(new Observateur()).start();		
+	 }
+	 
+	public static void init(String file) throws InvalidPropertiesFormatException, FileNotFoundException, IOException {
+		Properties properties = new Properties();
+		
+		properties.loadFromXML(new FileInputStream(file));
+		nbProd = Integer.parseInt(properties.getProperty("nbProd"));
+		nbCons = Integer.parseInt(properties.getProperty("nbCons"));
+		tailleBuffer = Integer.parseInt(properties.getProperty("nbBuffer"));
+		tempsMoyenProd = Integer.parseInt(properties.getProperty("tempsMoyenProduction"));
+		deviationTempsProd = Integer.parseInt(properties.getProperty("deviationTempsMoyenProduction"));
+		tempsMoyenCons = Integer.parseInt(properties.getProperty("tempsMoyenConsommation"));
+		deviationTempsCons = Integer.parseInt(properties.getProperty("deviationTempsMoyenConsommation"));
+		nbMoyenProd = Integer.parseInt(properties.getProperty("nombreMoyenDeProduction"));
+		deviationNbProd = Integer.parseInt(properties.getProperty("deviationNombreMoyenDeProduction"));
 
 	}
 	
-	 public static void main(String[] args){new TestProdCons(new Observateur()).start();
+	public static void terminaison() {
+		condTerminaison--;
+	}
+	
 
-
-	 	
-	 	
-	 }
 }
 
-//public static void init(String file) {
-//	Properties properties = new Properties();
-//	
-//	properties.loadFromXML(new FileInputStream(file));
-//	nb_cons = Integer.parseInt(properties.getProperty("CHAMP DANS LE XML"));
-//	...
-//	...
-//}

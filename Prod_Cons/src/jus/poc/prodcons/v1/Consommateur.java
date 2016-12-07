@@ -15,11 +15,15 @@ public class Consommateur extends Acteur implements _Consommateur{
 	//Nombre de message lus par le consommateur
 	private int nbMessage = 0;
 	
-	
-	protected Consommateur(ProdCons buffer, Observateur observateur, int moyenneTempsDeTraitement,
-			int deviationTempsDeTraitement) throws ControlException {
+	//Constructeur de Consommateur:
+		//buffer
+		//observateur
+		//tempsMoyenCons -> moyenneTempsDeTraitement()
+		//deviationTempsCons -> deviationTempsDeTraitement()
+	protected Consommateur(ProdCons buffer, Observateur observateur, int tempsMoyenCons,
+			int deviationTempsCons) throws ControlException {
 		
-		super(Acteur.typeConsommateur, observateur, moyenneTempsDeTraitement, deviationTempsDeTraitement);
+		super(Acteur.typeConsommateur, observateur, tempsMoyenCons, deviationTempsCons);
 		this.buffer = buffer;
 		
 	}
@@ -37,7 +41,6 @@ public class Consommateur extends Acteur implements _Consommateur{
 		int tpsAlea;
 		while(true) {
 			
-			
 			// Recupere un message sur le buffer
 			try {
 				msg = this.buffer.get(this);
@@ -47,7 +50,7 @@ public class Consommateur extends Acteur implements _Consommateur{
 			}
 			
 			//ACO: remplacer les variable int par les fonctions
-			tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement, deviationTempsDeTraitement);
+			tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
 			
 			//Attente pour simuler le traitement, c'est à dire la consommation du message	
 			try {
@@ -61,6 +64,5 @@ public class Consommateur extends Acteur implements _Consommateur{
 		
 	}
 	
-
 
 }

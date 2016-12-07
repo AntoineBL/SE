@@ -19,6 +19,7 @@ public class ProdCons implements Tampon{
 	// Nombre de message dans le buffer
 	private int nbMessageBuffer = 0;
 
+	
 	public ProdCons(int taille){
 		this.tailleBuffer = taille;
 		this.buffer = new Message[tailleBuffer];
