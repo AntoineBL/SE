@@ -15,8 +15,8 @@ public class Consommateur extends Acteur implements _Consommateur{
 	//Nombre de message lus par le consommateur
 	private int nbMessage = 0;
 	
-	//Condition de terminaison des threads consommateurs
-	public static boolean terminee = false;
+	
+	private int tpsAlea;
 	
 	//Constructeur de Consommateur:
 		//buffer
@@ -36,33 +36,38 @@ public class Consommateur extends Acteur implements _Consommateur{
 		return this.nbMessage;
 	}
 
+	public int gettpsAlea() {  //Fonction de debug
+		return tpsAlea;
+	}
+	
 	@Override
 	public void run() {
 		
-		Message msg;
-		int tpsAlea;
-		while(!terminee) {
-			
-			//Recupere un message sur le buffer
-			try {
-				msg = this.buffer.get(this);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		try {
+			Message msg;
+			int tpsAlea;
+			while(true) {
+				
+				//Recupere un message sur le buffer
+				try {
+					msg = this.buffer.get(this);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					//e1.printStackTrace();
+					break;
+				}
+				
+				//ACO: remplacer les variable int par les fonctions
+				tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
+				
+				//Attente pour simuler le traitement, c'est à dire la consommation du message	
+	
+					Thread.sleep(tpsAlea);
+	
+				//Fonction pas utilisé mais qui peut etre utile (savoir combien de message a lu un consommateur)
+				this.nbMessage = this.nbMessage +1;
 			}
-			
-			//ACO: remplacer les variable int par les fonctions
-			tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
-			
-			//Attente pour simuler le traitement, c'est à dire la consommation du message	
-			try {
-				Thread.sleep(tpsAlea);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			//Fonction pas utilisé mais qui peut etre utile (savoir combien de message a lu un consommateur)
-			this.nbMessage = this.nbMessage +1;
-		}
+		} catch(InterruptedException e) {System.out.println("Thread Interrupted!");}
 		
 	}
 	

@@ -44,7 +44,7 @@ public class ProdCons implements Tampon{
 
 	
 	@Override
-	public Message get(_Consommateur consommateur) throws Exception, InterruptedException {
+	public Message get(_Consommateur consommateur) throws InterruptedException {
 		
 		
 		notEmpty.P();
@@ -70,7 +70,7 @@ public class ProdCons implements Tampon{
 		buffer[iProd] = msg;
 		iProd = (iProd +1) % tailleBuffer;
 		//nbMessageBuffer++;
-		
+		System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
 		mutexIn.V();
 		notEmpty.V();
 	}

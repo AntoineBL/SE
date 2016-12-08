@@ -34,6 +34,10 @@ public class TestProdCons extends Simulateur{
 	@Override
 	protected void run() throws Exception {
 		
+		System.out.println("\n\n------------------");
+		System.out.println("DEBUT VERSION 2");
+		System.out.println("------------------");
+		
 		init("src/jus/poc/prodcons/options/options.xml");
 		ProdCons buffer = new ProdCons(tailleBuffer);
 		
@@ -58,15 +62,18 @@ public class TestProdCons extends Simulateur{
 		for(int i=0; i < nbProd; i++) {
 			tabProd[i].join();
 		}
-		//Bloquer le code tant que le buffer n'est pas vide
-//		while(buffer.enAttente() > 0) {
-//			//On attend
-//		}
-		for(int i=0; i < nbProd; i++) {
-			tabProd[i].yield();
+		
+//		Bloquer le code tant que le buffer n'est pas vide
+		while(buffer.enAttente() > 0) {
+			//On attend
 		}
-		//On  arrete les threads consommateurs
-		Consommateur.terminee = true;
+
+		for(int i=0; i < nbCons; i++) {
+			tabCons[i].interrupt();
+		}
+		for(int i=0; i < nbCons; i++) {
+			tabCons[i].join();
+		}
 
 		
 		System.out.println("\n\n------------------");

@@ -14,7 +14,8 @@ public class Producteur extends Acteur implements _Producteur{
 	//Nombre de message du producteur
 	private int nbMessage = 0;
 	
-	public static int nbProdAlive =0 ;
+	
+	private int tpsAlea;
 	
 	//Constructeur de Producteur:
 	//buffer
@@ -29,7 +30,6 @@ public class Producteur extends Acteur implements _Producteur{
 		super(Acteur.typeProducteur, observateur, tempsMoyenProd, deviationTempsProd);
 		this.buffer = buffer;
 		this.nbMessage = Aleatoire.valeur(nbMoyenProd, deviationNbProd);
-		this.nbProdAlive++;
 		
 	}
 
@@ -39,17 +39,21 @@ public class Producteur extends Acteur implements _Producteur{
 		return this.nbMessage;
 	}
 	
+	public int gettpsAlea() {  //Fonction de debug
+		return tpsAlea;
+	}
+	
 	public void run() {
 
 		MessageX message;
 		int IDmessage = 1;
-		int tpsAlea;
 		while (nombreDeMessages() > 0) {
 			//ACO: remplacer les variable int par les fonctions
 			tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
 			message = new MessageX(this,IDmessage);
 			
 			//Attente pour simuler le traitement, c'est à dire la production du message
+			System.out.println("Durée de production du message: "+((MessageX) message).toStringSimple()+" par le producteur: "+this.identification()+" = "+this.gettpsAlea()+" ms \n");
 			try {
 				Thread.sleep(tpsAlea);
 			} catch (InterruptedException e) {
@@ -67,7 +71,6 @@ public class Producteur extends Acteur implements _Producteur{
 			IDmessage++;
 			
 		}
-		nbProdAlive--;
 	}
 	
 

@@ -18,7 +18,7 @@ public class ProdCons implements Tampon{
 	
 	// Nombre de message dans le buffer
 	private int nbMessageBuffer = 0;
-
+	
 	
 	public ProdCons(int taille){
 		this.tailleBuffer = taille;
@@ -33,8 +33,7 @@ public class ProdCons implements Tampon{
 
 	
 	@Override
-	public synchronized Message get(_Consommateur consommateur) throws Exception, InterruptedException {
-		
+	public synchronized Message get(_Consommateur consommateur) throws InterruptedException {
 		while(nbMessageBuffer <= 0) {
 			wait();
 		}
@@ -42,8 +41,8 @@ public class ProdCons implements Tampon{
 		iCons = (iCons +1) % tailleBuffer;
 		nbMessageBuffer--;
 		
-		System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
-		
+		System.err.println("                                  Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple()+"\n");
+		System.out.println("---------->"+nbMessageBuffer);
 		notifyAll();
 		return msg;
 	}
@@ -59,8 +58,8 @@ public class ProdCons implements Tampon{
 		iProd = (iProd +1) % tailleBuffer;
 		nbMessageBuffer++;
 		
-		System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
-		
+		System.out.println("                                  Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString()+"\n");
+		System.out.println("---------->"+nbMessageBuffer);
 		notifyAll();
 	}
 
@@ -72,5 +71,6 @@ public class ProdCons implements Tampon{
 	public int getnbMessageBuffer() {
 		return nbMessageBuffer;
 	}
+	
 	
 }
