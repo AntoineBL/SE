@@ -8,74 +8,80 @@ import jus.poc.prodcons.v2.Semaphore;
 
 public class ProdCons implements Tampon{
 
-	private int nbMessageAttente;
-	private int taille;
-	private Message []buffer;
-	private int indiceBuffer;
-	private int indiceBufferBefor;
+	// Indice actuel du pointeur buffer pour les producteurs
+	private int iProd = 0;
+	// Indice actuel du pointeur buffer pour les consommateurs
+	private int iCons = 0;
+	
+	// Le buffer circulaire 
+	private Message[] buffer;
+	private int tailleBuffer;
+	
+	// Nombre de message dans le buffer
+	private int nbMessageBuffer = 0;
 	
 	private Semaphore notFull;
 	private Semaphore mutexIn;
 	private Semaphore notEmpty;
 	private Semaphore mutexOut;
-	
 
+	
 	public ProdCons(int taille){
-		nbMessageAttente =0;
-		this.taille = taille;
-		buffer = new Message[this.taille] ;
-		indiceBuffer = 0;
+		this.tailleBuffer = taille;
+		this.buffer = new Message[tailleBuffer];
 		
-		notFull = new Semaphore(taille);
-		mutexIn = new Semaphore(1);
-		notEmpty = new Semaphore(0);
-		mutexOut = new Semaphore(1);
+		this.notFull = new Semaphore(tailleBuffer);
+		this.mutexIn = new Semaphore(1);
+		this.notEmpty = new Semaphore(0);
+		this.mutexOut = new Semaphore(1);
 	}
 	
+	
 	@Override
-	public int enAttente() {
-		return nbMessageAttente;
+	public synchronized int enAttente() {
+		return nbMessageBuffer;	
 	}
 
+	
 	@Override
-	public Message get(_Consommateur arg0) throws Exception, InterruptedException {
-		
-		
-		nbMessageAttente--;
+	public Message get(_Consommateur consommateur) throws Exception, InterruptedException {
 		
 		
 		notEmpty.P();
 		mutexOut.P();
-		indiceBufferBefor = indiceBuffer;
-		indiceBuffer = (indiceBuffer + 1)%taille;
+		MessageX msg = (MessageX) buffer[iCons];
+		iCons = (iCons +1) % tailleBuffer;
+		//nbMessageBuffer--;
+		System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
 		mutexOut.V();
 		notFull.V();
 		
-		
-		return buffer[indiceBufferBefor];
+		return msg;
 	}
 
+
 	@Override
-	public void put(_Producteur arg0, Message arg1) throws Exception, InterruptedException {
+	public void put(_Producteur producteur, Message msg) throws Exception, InterruptedException {
+		
 		
 		notFull.P();
 		mutexIn.P();
-		buffer[(nbMessageAttente + indiceBuffer)%taille] = arg1;
-		
-		System.out.println(buffer[nbMessageAttente + indiceBuffer]);
-		System.out.println(nbMessageAttente);
-		nbMessageAttente++;
+
+		buffer[iProd] = msg;
+		iProd = (iProd +1) % tailleBuffer;
+		//nbMessageBuffer++;
 		
 		mutexIn.V();
 		notEmpty.V();
-		
-		
-		
 	}
 
 	@Override
 	public int taille() {
-		return this.taille;
+		return tailleBuffer;
+	}
+	
+	public int getnbMessageBuffer() {
+		return nbMessageBuffer;
 	}
 	
 }

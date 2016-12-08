@@ -62,6 +62,7 @@ public class TestProdCons extends Simulateur{
 		while(buffer.enAttente() > 0) {
 			//On attend
 		}
+		
 		//On  arrete les threads consommateurs
 		Consommateur.terminee = true;
 

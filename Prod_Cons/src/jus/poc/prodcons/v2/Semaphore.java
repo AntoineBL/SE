@@ -17,7 +17,7 @@ public class Semaphore {
     public synchronized void P() throws InterruptedException {
         this.nbThread--;
         if(this.nbThread < 0){
-        	wait();
+        	this.wait();
         }
     }
 
@@ -26,10 +26,9 @@ public class Semaphore {
      */
     public synchronized void V() {
         this.nbThread++;
-        if(this.nbThread <= 0){
-        	notify();
-        }
+        //if(this.nbThread <= 0){
+        	this.notify();
+        //}
     }
-	
 	
 }
