@@ -59,10 +59,12 @@ public class TestProdCons extends Simulateur{
 			tabProd[i].join();
 		}
 		//Bloquer le code tant que le buffer n'est pas vide
-		while(buffer.enAttente() > 0) {
-			//On attend
+//		while(buffer.enAttente() > 0) {
+//			//On attend
+//		}
+		for(int i=0; i < nbProd; i++) {
+			tabProd[i].yield();
 		}
-		
 		//On  arrete les threads consommateurs
 		Consommateur.terminee = true;
 
