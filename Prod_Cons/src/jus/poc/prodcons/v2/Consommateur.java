@@ -45,20 +45,17 @@ public class Consommateur extends Acteur implements _Consommateur{
 		
 		try {
 			Message msg;
-			int tpsAlea;
 			while(true) {
 				
+				tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
 				//Recupere un message sur le buffer
 				try {
 					msg = this.buffer.get(this);
 				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					//e1.printStackTrace();
 					break;
 				}
 				
-				//ACO: remplacer les variable int par les fonctions
-				tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
+
 				
 				//Attente pour simuler le traitement, c'est à dire la consommation du message	
 	

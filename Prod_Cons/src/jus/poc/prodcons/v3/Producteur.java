@@ -1,4 +1,4 @@
-package jus.poc.prodcons.v1;
+package jus.poc.prodcons.v3;
 
 import jus.poc.prodcons.Acteur;
 import jus.poc.prodcons.Aleatoire;
@@ -39,10 +39,6 @@ public class Producteur extends Acteur implements _Producteur{
 		return this.nbMessage;
 	}
 	
-	public int gettpsAlea() {  //Fonction de debug
-		return tpsAlea;
-	}
-	
 	public void run() {
 
 		MessageX message;
@@ -53,18 +49,23 @@ public class Producteur extends Acteur implements _Producteur{
 			message = new MessageX(this,IDmessage);
 			
 			//Attente pour simuler le traitement, c'est à dire la production du message
-			System.out.println("Durée de production du message: "+((MessageX) message).toStringSimple()+" par le producteur: "+this.identification()+" = "+this.gettpsAlea()+" ms \n");
 			try {
 				Thread.sleep(tpsAlea);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
+			
 			// Dépose un message sur le buffer
-			try {
+			try { 
 				this.buffer.put(this,message);
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+			//Methode pour l'observateur
+			try {
+				observateur.productionMessage(this, message, tpsAlea);
+			} catch (ControlException e1) {
+				e1.printStackTrace();
 			}
 			
 			this.nbMessage = this.nbMessage -1;
