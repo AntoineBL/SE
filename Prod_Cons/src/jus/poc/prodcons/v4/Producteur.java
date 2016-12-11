@@ -14,6 +14,9 @@ public class Producteur extends Acteur implements _Producteur{
 	//Nombre de message du producteur
 	private int nbMessage = 0;
 	
+	// Nombre d'exemplaire d'un message crée
+	private int nbExemplaire;
+	private int deviationNbExemplaire;
 	
 	private int tpsAlea;
 	
@@ -25,11 +28,13 @@ public class Producteur extends Acteur implements _Producteur{
 	//nbMoyenProd
 	//deviationTempsProd
 	protected Producteur(ProdCons buffer, Observateur observateur, int tempsMoyenProd,
-			int deviationTempsProd, int nbMoyenProd, int deviationNbProd) throws ControlException {
+			int deviationTempsProd, int nbMoyenProd, int deviationNbProd, int nbExemplaire, int deviationNbExemplaire) throws ControlException {
 		
 		super(Acteur.typeProducteur, observateur, tempsMoyenProd, deviationTempsProd);
 		this.buffer = buffer;
 		this.nbMessage = Aleatoire.valeur(nbMoyenProd, deviationNbProd);
+		this.nbExemplaire = nbExemplaire;
+		this.deviationNbExemplaire = deviationNbExemplaire;
 		
 	}
 
@@ -46,7 +51,7 @@ public class Producteur extends Acteur implements _Producteur{
 		while (nombreDeMessages() > 0) {
 
 			tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
-			message = new MessageX(this,IDmessage);
+			message = new MessageX(this,IDmessage, nbExemplaire, deviationNbExemplaire);
 			
 			//Attente pour simuler le traitement, c'est à dire la production du message
 			try {

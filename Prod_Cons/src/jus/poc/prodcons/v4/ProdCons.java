@@ -73,7 +73,7 @@ public class ProdCons implements Tampon{
 		
 		notFull.P();
 		mutexIn.P();
-
+		
 		buffer[iProd] = msg;
 		iProd = (iProd +1) % tailleBuffer;
 		//nbMessageBuffer++;

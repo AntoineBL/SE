@@ -24,6 +24,8 @@ public class TestProdCons extends Simulateur{
  	private static int deviationTempsCons;
  	private static int nbMoyenProd;
  	private static int deviationNbProd;
+ 	private static int nbExemplaire;
+ 	private static int deviationNbExemplaire;
  	
  	
  	
@@ -35,7 +37,7 @@ public class TestProdCons extends Simulateur{
 	protected void run() throws Exception {
 		
 		System.out.println("\n\n------------------");
-		System.out.println("DEBUT VERSION 3");
+		System.out.println("DEBUT VERSION 4");
 		System.out.println("------------------");
 		
 		initXML("src/jus/poc/prodcons/options/options.xml");
@@ -47,7 +49,7 @@ public class TestProdCons extends Simulateur{
 		
 		//CREATION DES PRODUCTEURS et CONSOMMATEURS + lancement des threads
 		for(int i=0; i < nbProd; i++) {
-			tabProd[i] = new Producteur(buffer, observateur, tempsMoyenProd, deviationTempsProd, nbMoyenProd, deviationNbProd);
+			tabProd[i] = new Producteur(buffer, observateur, tempsMoyenProd, deviationTempsProd, nbMoyenProd, deviationNbProd, nbExemplaire, deviationNbExemplaire);
 			observateur.newProducteur(tabProd[i]);
 		}
 		for(int i=0; i < nbCons; i++) {
@@ -60,7 +62,6 @@ public class TestProdCons extends Simulateur{
 		for(int i=0; i < nbCons; i++) {
 			tabCons[i].start();
 		}
-		
 		//Bloquer le code tant que tous les threads producteurs non pas fini
 		for(int i=0; i < nbProd; i++) {
 			tabProd[i].join();
@@ -101,6 +102,8 @@ public class TestProdCons extends Simulateur{
 		deviationTempsCons = Integer.parseInt(properties.getProperty("deviationTempsMoyenConsommation"));
 		nbMoyenProd = Integer.parseInt(properties.getProperty("nombreMoyenDeProduction"));
 		deviationNbProd = Integer.parseInt(properties.getProperty("deviationNombreMoyenDeProduction"));
+		nbExemplaire = Integer.parseInt(properties.getProperty("nombreMoyenNbExemplaire"));
+		deviationNbExemplaire = Integer.parseInt(properties.getProperty("deviationNombreMoyenNbExemplaire"));
 
 	}
 	
