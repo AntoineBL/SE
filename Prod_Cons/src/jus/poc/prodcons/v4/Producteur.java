@@ -10,11 +10,12 @@ public class Producteur extends Acteur implements _Producteur{
 
 	//Buffer utilisé par le producteur
 	private ProdCons buffer;
+	private Semaphore sProducteur;
 	
 	//Nombre de message du producteur
 	private int nbMessage = 0;
 	
-	
+	private int nbExemplaire;
 	private int tpsAlea;
 	
 	//Constructeur de Producteur:
@@ -25,11 +26,14 @@ public class Producteur extends Acteur implements _Producteur{
 	//nbMoyenProd
 	//deviationTempsProd
 	protected Producteur(ProdCons buffer, Observateur observateur, int tempsMoyenProd,
-			int deviationTempsProd, int nbMoyenProd, int deviationNbProd) throws ControlException {
+			int deviationTempsProd, int nbMoyenProd, int deviationNbProd, int  nbExemplaire) throws ControlException {
 		
 		super(Acteur.typeProducteur, observateur, tempsMoyenProd, deviationTempsProd);
 		this.buffer = buffer;
 		this.nbMessage = Aleatoire.valeur(nbMoyenProd, deviationNbProd);
+		this.nbExemplaire = nbExemplaire;
+		this.sProducteur = new Semaphore(1);
+		
 		
 	}
 
@@ -40,13 +44,13 @@ public class Producteur extends Acteur implements _Producteur{
 	}
 	
 	public void run() {
-
+		
 		MessageX message;
 		int IDmessage = 1;
 		while (nombreDeMessages() > 0) {
 
 			tpsAlea = Aleatoire.valeur(moyenneTempsDeTraitement(), deviationTempsDeTraitement());
-			message = new MessageX(this,IDmessage);
+			message = new MessageX(this,IDmessage, nbExemplaire);
 			
 			//Attente pour simuler le traitement, c'est à dire la production du message
 			try {
@@ -72,6 +76,14 @@ public class Producteur extends Acteur implements _Producteur{
 			IDmessage++;
 			
 		}
+	}
+	
+	public void sProducteurSuspend() throws InterruptedException{
+		this.sProducteur.P();
+	}
+	
+	public void sProducteurWakeup(){
+		this.sProducteur.V();
 	}
 	
 

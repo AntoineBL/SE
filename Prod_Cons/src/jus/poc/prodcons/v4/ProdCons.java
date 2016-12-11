@@ -32,13 +32,21 @@ public class ProdCons implements Tampon{
 	
 	public ProdCons(int taille, Observateur observateur){
 		this.tailleBuffer = taille;
-		this.buffer = new Message[tailleBuffer];
+		this.buffer = new Message[tailleBuffer*10];
 		this.observateur = observateur;
 		
 		this.notFull = new Semaphore(tailleBuffer);
 		this.mutexIn = new Semaphore(1);
 		this.notEmpty = new Semaphore(0);
 		this.mutexOut = new Semaphore(1);
+	}
+	
+	public int nbExempalaireTotal(){
+		int res=0;
+		for(int i=0; i<this.tailleBuffer; i++){
+			res = ((MessageX)this.buffer[i]).getNbExemplare();
+		}
+		return res;
 	}
 	
 	
@@ -56,13 +64,19 @@ public class ProdCons implements Tampon{
 		mutexOut.P();
 		
 		MessageX msg = (MessageX) buffer[iCons];
-		iCons = (iCons +1) % tailleBuffer;
-		//nbMessageBuffer--;
+		msg.setNbExemplare(msg.getNbExemplare() -1);
+		System.out.println("nbExemplaire"+msg.getNbExemplare());
+		if(msg.getNbExemplare() == 0 ){
+			iCons = (iCons +1) % tailleBuffer;
+		}
 		observateur.retraitMessage(consommateur, msg);
 		System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
 		mutexOut.V();
 		notFull.V();
 		
+		if(msg.getNbExemplare() == 0 ){
+			((Producteur) msg.getProducteurMessage()).sProducteurWakeup();
+		}
 		return msg;
 	}
 
@@ -70,7 +84,7 @@ public class ProdCons implements Tampon{
 	@Override
 	public void put(_Producteur producteur, Message msg) throws Exception, InterruptedException {
 		
-		
+		((Producteur) producteur).sProducteurSuspend();
 		notFull.P();
 		mutexIn.P();
 
@@ -81,6 +95,8 @@ public class ProdCons implements Tampon{
 		System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
 		mutexIn.V();
 		notEmpty.V();
+		
+		
 	}
 
 	@Override

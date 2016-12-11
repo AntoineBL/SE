@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
 
+import jus.poc.prodcons.Aleatoire;
 import jus.poc.prodcons.ControlException;
 import jus.poc.prodcons.Observateur;
 import jus.poc.prodcons.Simulateur;
@@ -24,7 +25,10 @@ public class TestProdCons extends Simulateur{
  	private static int deviationTempsCons;
  	private static int nbMoyenProd;
  	private static int deviationNbProd;
+ 	private static int nombreMoyenNbExemplaire;
+ 	private static int deviationNombreMoyenNbExemplaire;
  	
+ 	private int nbExemplare;
  	
  	
 	public TestProdCons(Observateur observateur) {
@@ -35,7 +39,7 @@ public class TestProdCons extends Simulateur{
 	protected void run() throws Exception {
 		
 		System.out.println("\n\n------------------");
-		System.out.println("DEBUT VERSION 3");
+		System.out.println("DEBUT VERSION 4");
 		System.out.println("------------------");
 		
 		initXML("src/jus/poc/prodcons/options/options.xml");
@@ -47,7 +51,8 @@ public class TestProdCons extends Simulateur{
 		
 		//CREATION DES PRODUCTEURS et CONSOMMATEURS + lancement des threads
 		for(int i=0; i < nbProd; i++) {
-			tabProd[i] = new Producteur(buffer, observateur, tempsMoyenProd, deviationTempsProd, nbMoyenProd, deviationNbProd);
+			nbExemplare = Aleatoire.valeur(nombreMoyenNbExemplaire, deviationNombreMoyenNbExemplaire);
+			tabProd[i] = new Producteur(buffer, observateur, tempsMoyenProd, deviationTempsProd, nbMoyenProd, deviationNbProd, nbExemplare);
 			observateur.newProducteur(tabProd[i]);
 		}
 		for(int i=0; i < nbCons; i++) {
@@ -101,6 +106,8 @@ public class TestProdCons extends Simulateur{
 		deviationTempsCons = Integer.parseInt(properties.getProperty("deviationTempsMoyenConsommation"));
 		nbMoyenProd = Integer.parseInt(properties.getProperty("nombreMoyenDeProduction"));
 		deviationNbProd = Integer.parseInt(properties.getProperty("deviationNombreMoyenDeProduction"));
+		nombreMoyenNbExemplaire = Integer.parseInt(properties.getProperty("nombreMoyenNbExemplaire"));
+	 	deviationNombreMoyenNbExemplaire = Integer.parseInt(properties.getProperty("deviationNombreMoyenNbExemplaire"));
 
 	}
 	
