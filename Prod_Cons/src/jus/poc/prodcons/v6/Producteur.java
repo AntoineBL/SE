@@ -14,7 +14,7 @@ public class Producteur extends Acteur implements _Producteur{
 	//Nombre de message du producteur
 	private int nbMessage = 0;
 	
-	
+	private MyObservateur myObservateur;
 	private int tpsAlea;
 	
 	//Constructeur de Producteur:
@@ -25,12 +25,12 @@ public class Producteur extends Acteur implements _Producteur{
 	//nbMoyenProd
 	//deviationTempsProd
 	protected Producteur(ProdCons buffer, Observateur observateur, int tempsMoyenProd,
-			int deviationTempsProd, int nbMoyenProd, int deviationNbProd) throws ControlException {
+			int deviationTempsProd, int nbMoyenProd, int deviationNbProd, MyObservateur myObservateur) throws ControlException {
 		
 		super(Acteur.typeProducteur, observateur, tempsMoyenProd, deviationTempsProd);
 		this.buffer = buffer;
 		this.nbMessage = Aleatoire.valeur(nbMoyenProd, deviationNbProd);
-		
+		this.myObservateur = myObservateur;
 	}
 
 	@Override
@@ -63,7 +63,8 @@ public class Producteur extends Acteur implements _Producteur{
 			}
 			//Methode pour l'observateur
 			try {
-				observateur.productionMessage(this, message, tpsAlea);
+				//observateur.productionMessage(this, message, tpsAlea);
+				myObservateur.productionMessage(this, message, tpsAlea);
 			} catch (ControlException e1) {
 				e1.printStackTrace();
 			}

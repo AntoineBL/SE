@@ -38,7 +38,7 @@ public class TestProdCons extends Simulateur{
 	@Override
 	protected void run() throws Exception {
 		System.out.println("\n\n------------------");
-		System.out.println("DEBUT VERSION 3");
+		System.out.println("DEBUT VERSION 6");
 		System.out.println("------------------");
 		
 		initXML("src/jus/poc/prodcons/options/options.xml");
@@ -51,12 +51,14 @@ public class TestProdCons extends Simulateur{
 		
 		//CREATION DES PRODUCTEURS et CONSOMMATEURS + lancement des threads
 		for(int i=0; i < nbProd; i++) {
-			tabProd[i] = new Producteur(buffer, observateur, tempsMoyenProd, deviationTempsProd, nbMoyenProd, deviationNbProd);
-			observateur.newProducteur(tabProd[i]);
+			tabProd[i] = new Producteur(buffer, observateur, tempsMoyenProd, deviationTempsProd, nbMoyenProd, deviationNbProd, myObservateur);
+			//observateur.newProducteur(tabProd[i]);
+			myObservateur.newProducteur(tabProd[i]);
 		}
 		for(int i=0; i < nbCons; i++) {
 			tabCons[i] = new Consommateur(buffer, observateur, tempsMoyenCons, deviationTempsCons, myObservateur);
-			observateur.newConsommateur(tabCons[i]);
+			//observateur.newConsommateur(tabCons[i]);
+			myObservateur.newConsommateur(tabCons[i]);
 		}
 		for(int i=0; i < nbProd; i++) {
 			tabProd[i].start();
