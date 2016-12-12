@@ -25,9 +25,9 @@ public class ProdCons implements Tampon{
 	private Observateur observateur;
 	
 	private Semaphore notFull;
-	private Semaphore mutexIn;
+	private Semaphore mutexProd;
 	private Semaphore notEmpty;
-	private Semaphore mutexOut;
+	private Semaphore mutexCons;
 
 	
 	public ProdCons(int taille, Observateur observateur){
@@ -36,9 +36,9 @@ public class ProdCons implements Tampon{
 		this.observateur = observateur;
 		
 		this.notFull = new Semaphore(tailleBuffer);
-		this.mutexIn = new Semaphore(1);
+		this.mutexProd = new Semaphore(1);
 		this.notEmpty = new Semaphore(0);
-		this.mutexOut = new Semaphore(1);
+		this.mutexCons = new Semaphore(1);
 	}
 	
 	
@@ -53,14 +53,14 @@ public class ProdCons implements Tampon{
 		
 		
 		notEmpty.P();
-		mutexOut.P();
+		mutexCons.P();
 		
 		MessageX msg = (MessageX) buffer[iCons];
 		iCons = (iCons +1) % tailleBuffer;
 		//nbMessageBuffer--;
 		observateur.retraitMessage(consommateur, msg);
 		System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
-		mutexOut.V();
+		mutexCons.V();
 		notFull.V();
 		
 		return msg;
@@ -72,14 +72,14 @@ public class ProdCons implements Tampon{
 		
 		
 		notFull.P();
-		mutexIn.P();
+		mutexProd.P();
 
 		buffer[iProd] = msg;
 		iProd = (iProd +1) % tailleBuffer;
 		//nbMessageBuffer++;
 		observateur.depotMessage(producteur, msg);
 		System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
-		mutexIn.V();
+		mutexProd.V();
 		notEmpty.V();
 	}
 

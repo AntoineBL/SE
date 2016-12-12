@@ -5,7 +5,7 @@
 		Cette configuration ...
 	</comment>
 	<entry key="nbProd">5</entry>
-	<entry key="nbCons">5</entry>
+	<entry key="nbCons">10</entry>
 	<entry key="nbBuffer">10</entry>
 	<entry key="tempsMoyenProduction">1000</entry>
 	<entry key="deviationTempsMoyenProduction">999</entry>
@@ -13,6 +13,6 @@
 	<entry key="deviationTempsMoyenConsommation">999</entry>
 	<entry key="nombreMoyenDeProduction">5</entry>
 	<entry key="deviationNombreMoyenDeProduction">1</entry>
-	<entry key="nombreMoyenNbExemplaire">5</entry>
+	<entry key="nombreMoyenNbExemplaire">4</entry>
 	<entry key="deviationNombreMoyenNbExemplaire">0</entry>
 </properties> 

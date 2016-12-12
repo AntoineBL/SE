@@ -1,6 +1,4 @@
-package jus.poc.prodcons.v4;
-
-import java.util.HashMap;
+package jus.poc.prodcons.v5;
 
 import jus.poc.prodcons.ControlException;
 import jus.poc.prodcons.Message;
@@ -9,6 +7,10 @@ import jus.poc.prodcons.Tampon;
 import jus.poc.prodcons._Consommateur;
 import jus.poc.prodcons._Producteur;
 import jus.poc.prodcons.v2.Semaphore;
+
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ProdCons implements Tampon{
 
@@ -26,26 +28,16 @@ public class ProdCons implements Tampon{
 	
 	private Observateur observateur;
 	
-	private Semaphore notFull;
-	private Semaphore mutexProd;
-	private Semaphore notEmpty;
-	private Semaphore mutexCons;
-	
-	private HashMap<Integer, Integer> prodExemplaire = null;
+    private final Lock lock = new ReentrantLock();
 
-
+    private final Condition notFull = lock.newCondition();
+    private final Condition notEmpty = lock.newCondition();
 	
 	public ProdCons(int taille, Observateur observateur){
 		this.tailleBuffer = taille;
 		this.buffer = new Message[tailleBuffer];
 		this.observateur = observateur;
-		
-		this.notFull = new Semaphore(tailleBuffer);
-		this.mutexProd = new Semaphore(1);
-		this.notEmpty = new Semaphore(0);
-		this.mutexCons = new Semaphore(1);
-		
-		prodExemplaire = new HashMap<Integer, Integer>();
+
 	}
 	
 	
@@ -58,70 +50,48 @@ public class ProdCons implements Tampon{
 	@Override
 	public Message get(_Consommateur consommateur) throws InterruptedException, ControlException {
 		
-		MessageX msg;
-		boolean terminee = false;
-		notEmpty.P();
-		mutexCons.P();
-			msg = (MessageX) buffer[iCons];
+		lock.lock();
+		
+		try {
+	        while (nbMessageBuffer <= 0) {
+	            notEmpty.await();
+	        }
 			
-			int eRestants = this.prodExemplaire.get(msg.getProducteurId());
-			eRestants--;
-			this.prodExemplaire.put(msg.getProducteurId(), eRestants);
+			MessageX msg = (MessageX) buffer[iCons];
+			iCons = (iCons +1) % tailleBuffer;
+	
 			
-			
-			if (eRestants == 0) {
-				iCons = (iCons +1) % tailleBuffer;
-				terminee = true;
-				
-			} else {
-				terminee = false;
-			}
-			
-
 			observateur.retraitMessage(consommateur, msg);
 			System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
-		
-		
-		if (terminee) {
-			mutexCons.V();
-			synchronized(msg) {
-				msg.notifyAll();	
-			}
-
-		} else {
-			notEmpty.V();
-			mutexCons.V();
-			synchronized(msg) {
-			msg.wait(); }
+			
+			notFull.signal();
+			
+			return msg;
+		} finally {
+			lock.unlock();
 		}
-
-		notFull.V();
-		return msg;
 	}
 
 
 	@Override
 	public void put(_Producteur producteur, Message msg) throws Exception, InterruptedException {
 		
+		lock.lock();
 		
-		notFull.P();
-		
-		mutexProd.P();
+		try {
+			while(nbMessageBuffer >= tailleBuffer) {
+				notFull.await();
+			}
 			buffer[iProd] = msg;
 			iProd = (iProd +1) % tailleBuffer;
 			
-			int exemplaireRestants = ((MessageX) msg).getnbExemplaire(); 
-			this.prodExemplaire.put(producteur.identification(), exemplaireRestants);
-			
 			observateur.depotMessage(producteur, msg);
 			System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
-		mutexProd.V();
-		
-		notEmpty.V();
-		synchronized(msg) {
-		msg.wait(); }
-
-		
+			
+			notEmpty.signal();
+		} finally {
+			lock.unlock();
+		}
 	}
 
 	@Override
