@@ -53,7 +53,6 @@ public class Producteur extends Acteur implements _Producteur{
 			message = new MessageX(this,IDmessage);
 			
 			//Attente pour simuler le traitement, c'est à dire la production du message
-			System.out.println("Durée de production du message: "+((MessageX) message).toStringSimple()+" par le producteur: "+this.identification()+" = "+this.gettpsAlea()+" ms \n");
 			try {
 				Thread.sleep(tpsAlea);
 			} catch (InterruptedException e) {

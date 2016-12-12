@@ -56,15 +56,13 @@ public class Consommateur extends Acteur implements _Consommateur{
 				}
 				
 				//Attente pour simuler le traitement, c'est à dire la consommation du message
-				System.err.println("Durée de consommation du message: "+((MessageX) msg).toStringSimple()+" par le consommateur: "+this.identification()+" = "+this.gettpsAlea()+" ms\n");
-				
 				Thread.sleep(tpsAlea);
 
 				//Fonction pas utilisé mais qui peut etre utile (savoir combien de message a lu un consommateur)
 				this.nbMessage = this.nbMessage +1;
 			}
 			
-		} catch (InterruptedException e) {System.out.println("Thread Interrupted!");}
+		} catch (InterruptedException e) {}
 	}
 	
 

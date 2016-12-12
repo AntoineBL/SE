@@ -41,8 +41,7 @@ public class ProdCons implements Tampon{
 		iCons = (iCons +1) % tailleBuffer;
 		nbMessageBuffer--;
 		
-		System.err.println("                                  Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple()+"\n");
-		System.out.println("---------->"+nbMessageBuffer);
+		System.out.println("Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple()+"\n");
 		notifyAll();
 		return msg;
 	}
@@ -58,8 +57,7 @@ public class ProdCons implements Tampon{
 		iProd = (iProd +1) % tailleBuffer;
 		nbMessageBuffer++;
 		
-		System.out.println("                                  Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString()+"\n");
-		System.out.println("---------->"+nbMessageBuffer);
+		System.out.println("Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString()+"\n");
 		notifyAll();
 	}
 

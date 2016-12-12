@@ -64,7 +64,7 @@ public class Consommateur extends Acteur implements _Consommateur{
 				//Fonction pas utilisé mais qui peut etre utile (savoir combien de message a lu un consommateur)
 				this.nbMessage = this.nbMessage +1;
 			}
-		} catch(InterruptedException e) {System.out.println("Thread Interrupted!");}
+		} catch(InterruptedException e) {}
 		
 	}
 	
