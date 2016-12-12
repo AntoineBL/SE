@@ -8,7 +8,7 @@
 	<entry key="nbCons">10</entry>
 	<entry key="nbBuffer">10</entry>
 	<entry key="tempsMoyenProduction">1000</entry>
-	<entry key="deviationTempsMoyenProduction">999</entry>
+	<entry key="deviationTempsMoyenProduction">1001</entry>
 	<entry key="tempsMoyenConsommation">1000</entry>
 	<entry key="deviationTempsMoyenConsommation">999</entry>
 	<entry key="nombreMoyenDeProduction">5</entry>
