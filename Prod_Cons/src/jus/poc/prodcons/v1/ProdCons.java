@@ -40,7 +40,6 @@ public class ProdCons implements Tampon{
 		MessageX msg = (MessageX) buffer[iCons];
 		iCons = (iCons +1) % tailleBuffer;
 		nbMessageBuffer--;
-		
 		System.out.println("Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple()+"\n");
 		notifyAll();
 		return msg;

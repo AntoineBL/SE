@@ -1,4 +1,4 @@
-package jus.poc.prodcons.v4;
+package casseLesCouilles;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -37,13 +37,13 @@ public class TestProdCons extends Simulateur{
 	protected void run() throws Exception {
 		
 		System.out.println("\n\n------------------");
-		System.out.println("DEBUT VERSION 4");
+		System.out.println("DEBUT VERSION CASSE LES COUILLES");
 		System.out.println("------------------");
 		
 		initXML("src/jus/poc/prodcons/options/options.xml");
 		observateur.init(nbProd, nbCons, tailleBuffer);
 		ProdCons buffer = new ProdCons(tailleBuffer, observateur);
-
+		
 		Consommateur[] tabCons = new Consommateur[nbCons];
 	 	Producteur[] tabProd = new Producteur[nbProd];
 		

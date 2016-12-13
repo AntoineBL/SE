@@ -1,4 +1,7 @@
-package jus.poc.prodcons.v3;
+package casseLesCouilles;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import jus.poc.prodcons.ControlException;
 import jus.poc.prodcons.Message;
@@ -28,6 +31,11 @@ public class ProdCons implements Tampon{
 	private Semaphore mutexProd;
 	private Semaphore notEmpty;
 	private Semaphore mutexCons;
+	
+	private Map<Integer, Semaphore> prodSemaphore = null;
+	private Map<Integer, Integer> prodExemplaire = null;
+	
+
 
 	
 	public ProdCons(int taille, Observateur observateur){
@@ -39,6 +47,9 @@ public class ProdCons implements Tampon{
 		this.mutexProd = new Semaphore(1);
 		this.notEmpty = new Semaphore(0);
 		this.mutexCons = new Semaphore(1);
+		
+		prodExemplaire = new HashMap<Integer, Integer>();
+		prodSemaphore = new HashMap<Integer, Semaphore>();
 	}
 	
 	
@@ -51,18 +62,43 @@ public class ProdCons implements Tampon{
 	@Override
 	public Message get(_Consommateur consommateur) throws InterruptedException, ControlException {
 		
+		MessageX msg;
+		boolean Pasterminee;
+		int eRestants;
 		
 		notEmpty.P();
 		mutexCons.P();
-		
-		MessageX msg = (MessageX) buffer[iCons];
-		iCons = (iCons +1) % tailleBuffer;
-		nbMessageBuffer--;
-		observateur.retraitMessage(consommateur, msg);
-		System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
+			msg = (MessageX) buffer[iCons];
+			eRestants = this.prodExemplaire.get(msg.getProducteurId());
+			eRestants--;
+			this.prodExemplaire.put(msg.getProducteurId(), eRestants);
+			
+			if (eRestants == 0) {
+				iCons = (iCons +1) % tailleBuffer;
+				Pasterminee = false;
+				
+			} else {
+				Pasterminee = true;
+			}
+
+			observateur.retraitMessage(consommateur, msg);
+			System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
 		mutexCons.V();
-		notFull.V();
 		
+		if (Pasterminee) {
+			notEmpty.V();
+			synchronized(msg) {
+				msg.wait();
+			}
+			} 
+		else {
+			synchronized(msg) {
+				msg.notifyAll();
+			}
+			prodSemaphore.get(msg.getProducteurId()).V();
+			notFull.V();
+		}
+
 		return msg;
 	}
 
@@ -72,15 +108,24 @@ public class ProdCons implements Tampon{
 		
 		
 		notFull.P();
+		
 		mutexProd.P();
-
-		buffer[iProd] = msg;
-		iProd = (iProd +1) % tailleBuffer;
-		nbMessageBuffer++;
-		observateur.depotMessage(producteur, msg);
-		System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
+			buffer[iProd] = msg;
+			iProd = (iProd +1) % tailleBuffer;
+			
+			int exemplaireRestants = ((MessageX) msg).getnbExemplaire(); 
+			this.prodExemplaire.put(producteur.identification(), exemplaireRestants);
+			
+			observateur.depotMessage(producteur, msg);
+			System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
 		mutexProd.V();
 		notEmpty.V();
+		/* Création de la Sémaphore permettant l'attente de la fin de conso */
+		Semaphore wSemaphore = new Semaphore(0);
+		prodSemaphore.put(((MessageX) msg).getProducteurId(), wSemaphore);
+		wSemaphore.P();
+
+		
 	}
 
 	@Override

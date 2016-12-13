@@ -30,8 +30,9 @@ public class ProdCons implements Tampon{
 	private Semaphore mutexProd;
 	private Semaphore notEmpty;
 	private Semaphore mutexCons;
+	//private Semaphore test;
 	
-	private HashMap<Integer, Integer> prodExemplaire = null;
+	private HashMap<Message, Integer> prodExemplaire = null;
 
 
 	
@@ -44,8 +45,9 @@ public class ProdCons implements Tampon{
 		this.mutexProd = new Semaphore(1);
 		this.notEmpty = new Semaphore(0);
 		this.mutexCons = new Semaphore(1);
+		//this.test = new Semaphore(1);
 		
-		prodExemplaire = new HashMap<Integer, Integer>();
+		prodExemplaire = new HashMap<Message, Integer>();
 	}
 	
 	
@@ -59,41 +61,36 @@ public class ProdCons implements Tampon{
 	public Message get(_Consommateur consommateur) throws InterruptedException, ControlException {
 		
 		MessageX msg;
-		boolean terminee = false;
+		int eRestants;
+		
 		notEmpty.P();
 		mutexCons.P();
-			msg = (MessageX) buffer[iCons];
+	
+				msg = (MessageX) buffer[iCons];
+
+			System.out.println(this.enAttente());
 			
-			int eRestants = this.prodExemplaire.get(msg.getProducteurId());
+			eRestants = this.prodExemplaire.get(msg);
 			eRestants--;
-			this.prodExemplaire.put(msg.getProducteurId(), eRestants);
-			
-			
-			if (eRestants == 0) {
-				iCons = (iCons +1) % tailleBuffer;
-				terminee = true;
-				
-			} else {
-				terminee = false;
-			}
+			this.prodExemplaire.put(msg, eRestants); // ACO : synchroniser sur this.prodExemplaire
 			
 
 			observateur.retraitMessage(consommateur, msg);
 			System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
-		
-		
-		if (terminee) {
-			mutexCons.V();
-			synchronized(msg) {
-				msg.notifyAll();	
+			
+			if (eRestants == 0) {
+				iCons = (iCons +1) % tailleBuffer;
+				nbMessageBuffer--;
+				synchronized(msg) {
+					msg.notifyAll();	
+				}
+		mutexCons.V(); // remettre ou c'etait avant ACO
+			} else {
+		mutexCons.V();
+				synchronized(msg) {
+					msg.wait(); 
+				}
 			}
-
-		} else {
-			notEmpty.V();
-			mutexCons.V();
-			synchronized(msg) {
-			msg.wait(); }
-		}
 
 		notFull.V();
 		return msg;
@@ -105,21 +102,27 @@ public class ProdCons implements Tampon{
 		
 		
 		notFull.P();
-		
+		//System.out.println("------------"+msg+"-------------");
 		mutexProd.P();
 			buffer[iProd] = msg;
 			iProd = (iProd +1) % tailleBuffer;
-			
+			nbMessageBuffer++;
 			int exemplaireRestants = ((MessageX) msg).getnbExemplaire(); 
-			this.prodExemplaire.put(producteur.identification(), exemplaireRestants);
+			this.prodExemplaire.put(msg, exemplaireRestants);
 			
 			observateur.depotMessage(producteur, msg);
 			System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
+
+		//test.P();
+			for(int i =0; i < exemplaireRestants; i++ ) {
+				notEmpty.V();
+			}
+		//test.V();
 		mutexProd.V();
-		
-		notEmpty.V();
-		synchronized(msg) {
-		msg.wait(); }
+			synchronized(msg) {
+				if (this.prodExemplaire.get(msg) != 0)
+				msg.wait(); 
+		}
 
 		
 	}

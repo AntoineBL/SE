@@ -51,7 +51,7 @@ public class ProdCons implements Tampon{
 		mutexCons.P();
 		MessageX msg = (MessageX) buffer[iCons];
 		iCons = (iCons +1) % tailleBuffer;
-		//nbMessageBuffer--;
+		nbMessageBuffer--;
 		System.out.println("\n Le consommateur: "+consommateur.identification()+" vient de retirer le message "+msg.toStringSimple());
 		mutexCons.V();
 		notFull.V();
@@ -69,7 +69,7 @@ public class ProdCons implements Tampon{
 
 		buffer[iProd] = msg;
 		iProd = (iProd +1) % tailleBuffer;
-		//nbMessageBuffer++;
+		nbMessageBuffer++;
 		System.out.println("\n Le producteur: "+producteur.identification()+" vient de produire un message: "+msg.toString());
 		mutexProd.V();
 		notEmpty.V();
